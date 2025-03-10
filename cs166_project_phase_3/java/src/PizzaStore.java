@@ -357,11 +357,11 @@ public class PizzaStore {
 
       try {
 
-         System.out.print("Enter login: ");
+         System.out.print("Create Username: ");
          String login = in.readLine();
-         System.out.print("Enter password: ");
+         System.out.print("Create Password: ");
          String password = in.readLine();
-         System.out.print("Enter phone number: ");
+         System.out.print("Enter your phone number: ");
          String phone = in.readLine();
 
          String query = "INSERT INTO Users(login, password, role, favoriteItems, phoneNum) VALUES ('"
@@ -383,6 +383,37 @@ public class PizzaStore {
     **/
    public static String LogIn(PizzaStore esql){
       
+      try {
+
+         System.out.print("Enter your username: ");
+         String username = in.readLine();
+         System.out.print("Enter your password: ");
+         String password = in.readLine();
+
+         String query = "SELECT u.login FROM Users u WHERE u.login = '" + username + "' AND u.password = '" + password + "'";
+
+         List<List<String>> result = esql.executeQueryAndReturnResult(query);
+
+         if(!result.isEmpty()) {
+
+            System.out.println("Login Successful!");
+            return username;
+         }
+
+         else {
+
+             System.out.println("Invlaid login!");
+             return null;
+         }
+      }
+
+      catch(Exception e) {
+
+         System.err.println(e.getMessage());
+
+      }
+
+      return null;
       
    }//end
 
