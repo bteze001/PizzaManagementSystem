@@ -287,8 +287,8 @@ public class PizzaStore {
                 System.out.println(".........................");
                 System.out.println("20. Log out");
                 switch (readChoice()){
-                   case 1: viewProfile(esql); break;
-                   case 2: updateProfile(esql); break;
+                   case 1: viewProfile(esql, authorisedUser); break;
+                   case 2: updateProfile(esql, authorisedUser); break;
                    case 3: viewMenu(esql); break;
                    case 4: placeOrder(esql); break;
                    case 5: viewAllOrders(esql); break;
@@ -396,7 +396,7 @@ public class PizzaStore {
 
          if(!result.isEmpty()) {
 
-            System.out.println("Login Successful!");
+            System.out.println("Login Successful! Welcome " + username);
             return username;
          }
 
@@ -419,8 +419,89 @@ public class PizzaStore {
 
 // Rest of the functions definition go in here
 
-   public static void viewProfile(PizzaStore esql) {}
-   public static void updateProfile(PizzaStore esql) {}
+   public static void viewProfile(PizzaStore esql, String username) {
+      
+      try {
+
+         String query = "SELECT * FROM Users u WHERE u.login = '" + username + "'";
+         esql.executeQueryAndPrintResult(query);
+      }
+
+      catch (Exception e) {
+         
+         System.err.println(e.getMessage());
+      }
+   }
+
+   public static void updateProfile(PizzaStore esql, String username) {
+
+      try {
+
+         System.out.println ("Update Profile Menu");
+         System.out.println ("1. Change Password");
+         System.out.println ("2. Change Phone Number");
+         System.out.println ("3. Change Favorite Item");
+         System.out.println ("4. Exit");
+
+         int choice = readChoice();
+
+         switch(choice) {
+
+            case 1: 
+
+               System.out.println ("Enter your new password: ");
+               String newPassword = in.readLine();
+
+               String passwordQuery = "Update Users SET password = '" + newPassword + "' WHERE login = '" + username + "'";
+               esql.executeUpdate(passwordQuery);
+
+               System.out.println ("Password changed successsfully!");
+
+               break;
+
+            case 2: 
+
+               System.out.println ("Enter your new phone number ");
+               String newPhone = in.readLine();
+
+               String phoneQuery = "Update Users SET phoneNum = '" + newPhone + "' WHERE login = '" + username + "'";
+               esql.executeUpdate(phoneQuery);
+
+               System.out.println ("Phone number changed successsfully!");
+
+               break;
+
+            case 3:
+
+               System.out.println ("Enter your new favorite items (separate by comma): ");
+               String newFavorite = in.readLine();
+
+               String favoriteQuery = "Update Users SET favoriteItems = '" + newFavorite + "' WHERE login = '" + username + "'";
+               esql.executeUpdate(favoriteQuery);
+
+               System.out.println ("Favorite Items changed successsfully!");
+
+               break;
+
+            case 4:
+
+               System.out.println ("Returning to main menu...");
+
+               break;
+
+            case 5:
+
+               System.out.println ("Invalid choice! Please choose agian");
+
+         }
+      }
+
+      catch (Exception e) {
+         
+         System.err.println(e.getMessage());
+      }
+
+   }
    public static void viewMenu(PizzaStore esql) {}
    public static void placeOrder(PizzaStore esql) {}
    public static void viewAllOrders(PizzaStore esql) {}
