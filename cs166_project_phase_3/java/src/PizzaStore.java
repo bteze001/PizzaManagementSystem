@@ -109,23 +109,65 @@ public class PizzaStore {
       int numCol = rsmd.getColumnCount ();
       int rowCount = 0;
 
-      // iterates through the result set and output them to standard out.
-      boolean outputHeader = true;
+      int defaultWidth = 40;
+
+      int[] colWidths = new int[numCol];
+
+      for (int i = 1; i <= numCol; i++) {
+         colWidths[i - 1] = Math.max(rsmd.getColumnName(i).length(), defaultWidth);
+      }
+
+   // Build header row with dividers
+      StringBuilder header = new StringBuilder();
+      header.append("|");
+      
+      for (int i = 1; i <= numCol; i++) {
+         header.append(String.format(" %-" + colWidths[i - 1] + "." + colWidths[i - 1] + "s |", rsmd.getColumnName(i)));
+      }
+      
+      System.out.println(header.toString());
+
+   // Build a divider line that separates header from rows and between rows
+      StringBuilder divider = new StringBuilder();
+      divider.append("+");
+      for (int i = 1; i <= numCol; i++) {
+         for (int j = 0; j < colWidths[i - 1] + 2; j++) { 
+            divider.append("-");
+         }
+         divider.append("+");
+      }
+      System.out.println(divider.toString());
+
       while (rs.next()){
-		 if(outputHeader){
-			for(int i = 1; i <= numCol; i++){
-			System.out.print(rsmd.getColumnName(i) + "\t");
-			}
-			System.out.println();
-			outputHeader = false;
-		 }
-         for (int i=1; i<=numCol; ++i)
-            System.out.print (rs.getString (i) + "\t");
-         System.out.println ();
-         ++rowCount;
-      }//end while
+         StringBuilder row = new StringBuilder();
+         row.append("|");
+         for (int i = 1; i <= numCol; i++){
+            row.append(String.format(" %-" + colWidths[i - 1] + "." + colWidths[i - 1] + "s |", rs.getString(i)));
+         }
+         System.out.println(row.toString());
+         System.out.println(divider.toString()); // divider after each row
+         rowCount++;
+      }
       stmt.close();
       return rowCount;
+
+      // iterates through the result set and output them to standard out.
+      // boolean outputHeader = true;
+      // while (rs.next()){
+		//  if(outputHeader){
+		// 	for(int i = 1; i <= numCol; i++){
+		// 	System.out.print(rsmd.getColumnName(i) + "\t");
+		// 	}
+		// 	System.out.println();
+		// 	outputHeader = false;
+		//  }
+      //    for (int i=1; i<=numCol; ++i)
+      //       System.out.print (rs.getString (i) + "\t");
+      //    System.out.println ();
+      //    ++rowCount;
+      // }//end while
+      // stmt.close();
+      // return rowCount;
    }//end executeQuery
 
    /**
@@ -502,7 +544,108 @@ public class PizzaStore {
       }
 
    }
-   public static void viewMenu(PizzaStore esql) {}
+
+   public static void viewMenu(PizzaStore esql) {
+
+      try {
+
+         System.out.println ("View Menu");
+         System.out.println ("1. View all items");
+         System.out.println ("2. Filter items by type");
+         System.out.println ("3. Filter items by price");
+         System.out.println ("4. Sort items by price (lowest to highest)");
+         System.out.println ("5. Sort items by price (highest to lowest)");
+         System.out.println ("6. Exit");
+
+         int choice = readChoice();
+
+         switch(choice) {
+
+            case 1:
+
+               String query = "SELECT * FROM Items";
+               esql.executeQueryAndPrintResult(query);
+
+               break;
+
+            case 2:
+               System.out.println ("Choose Item type");
+               System.out.println ("1. Entrees");
+               System.out.println ("2. Drinks");
+               System.out.println ("3. Sides");
+
+               int typeChoice = readChoice();
+
+               switch(typeChoice) {
+
+                  case 1:
+
+                     String entreeQuery = "SELECT * FROM Items WHERE TRIM(LOWER(typeOfItem)) = 'entree'";
+                     esql.executeQueryAndPrintResult(entreeQuery);
+
+                     break;
+
+                  case 2:
+
+                     String drinkQuery = "SELECT * FROM Items WHERE TRIM(LOWER(typeOfItem)) = 'drinks'";
+                     esql.executeQueryAndPrintResult(drinkQuery);
+
+                     break;
+
+                  case 3:
+
+                     String sideQuery = "SELECT * FROM Items WHERE TRIM(LOWER(typeOfItem)) = 'sides'";
+                     esql.executeQueryAndPrintResult(sideQuery);
+
+                     break;
+               }
+
+               break;
+            
+            case 3: 
+
+               System.out.println ("Enter the maximum price: ");
+
+               double maxPrice = Double.parseDouble(in.readLine());
+
+               String priceQuery = "SELECT * FROM Items WHERE price <= " + maxPrice;
+               esql.executeQueryAndPrintResult(priceQuery);
+
+               break;
+
+            case 4: 
+
+               String sortQuery1 = "SELECT * FROM Items ORDER BY price ASC";
+               esql.executeQueryAndPrintResult(sortQuery1);
+
+               break;
+
+            case 5: 
+
+               String sortQuery2 = "SELECT * FROM Items ORDER BY price DESC";
+               esql.executeQueryAndPrintResult(sortQuery2);
+
+               break;
+
+            case 6: 
+
+               System.out.println ("Returning to main menu ...");
+
+               break;
+
+            case 7:
+
+               System.out.println ("Invalid choice! Please choose agian");
+               
+         }
+
+      }
+
+      catch (Exception e) {
+         
+         System.err.println(e.getMessage());
+      }
+   }
    public static void placeOrder(PizzaStore esql) {}
    public static void viewAllOrders(PizzaStore esql) {}
    public static void viewRecentOrders(PizzaStore esql) {}
