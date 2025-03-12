@@ -339,7 +339,7 @@ public class PizzaStore {
                    case 8: viewStores(esql); break;
                    case 9: updateOrderStatus(esql); break;
                    case 10: updateMenu(esql); break;
-                   case 11: updateUser(esql); break;
+                   case 11: updateUser(esql, authorisedUser); break;
 
 
 
@@ -545,6 +545,81 @@ public class PizzaStore {
 
    }
 
+   public static void updateUser(PizzaStore esql, String username) {
+
+      try {
+
+         String checkQuery = "SELECT role FROM Users WHERE login = '" + username + "'";
+
+         List<List<String>> result = esql.executeQueryAndReturnResult(checkQuery);
+
+         if (result.isEmpty() || !result.get(0).get(0).trim().equalsIgnoreCase("manager")) {
+
+            System.out.println("You are not authorized to update user login or role.");
+
+            return;
+         }
+
+         System.out.println ("Manager Update Profile");
+         System.out.println ("1. Update user login");
+         System.out.println ("2. Update user role");
+         System.out.println ("3. Exit");
+
+         int choice = readChoice();
+
+         switch(choice) {
+
+            case 1: 
+
+               System.out.println("Enter the current login of the user to update: ");
+               String currentLogin = in.readLine();
+
+               System.out.println("Enter the new login: ");
+               String newLogin = in.readLine();
+
+              String updateLoginQuery = "UPDATE Users SET login = '" + newLogin + "' WHERE login = '" + currentLogin + "'";
+
+               esql.executeUpdate(updateLoginQuery);
+
+               System.out.println("User login updated successfully from '" + currentLogin + "' to '" + newLogin + "'");
+
+               break;
+
+            case 2:
+
+               System.out.println("Enter the current login of the user to update the role: ");
+               String login = in.readLine();
+
+               System.out.println("Enter the new role: ");
+               String newRole = in.readLine();
+
+               String updateRoleQuery = "UPDATE Users SET role = '" + newRole + "' WHERE login = '" + login + "'";
+
+
+               esql.executeUpdate(updateRoleQuery);
+
+               System.out.println("User role updated successfully to '" + newRole + "'");
+
+               break;
+
+            case 3:
+               
+               System.out.println ("Returning to main menu...");
+
+               break;
+
+            case 4:
+
+               System.out.println ("Invalid choice! Please choose agian");
+         }
+      }
+
+      catch (Exception e) {
+         
+         System.err.println(e.getMessage());
+      }
+   }
+
    public static void viewMenu(PizzaStore esql) {
 
       try {
@@ -646,14 +721,15 @@ public class PizzaStore {
          System.err.println(e.getMessage());
       }
    }
-   public static void placeOrder(PizzaStore esql) {}
+
    public static void viewAllOrders(PizzaStore esql) {}
+   public static void placeOrder(PizzaStore esql) {}
    public static void viewRecentOrders(PizzaStore esql) {}
    public static void viewOrderInfo(PizzaStore esql) {}
    public static void viewStores(PizzaStore esql) {}
    public static void updateOrderStatus(PizzaStore esql) {}
    public static void updateMenu(PizzaStore esql) {}
-   public static void updateUser(PizzaStore esql) {}
+   
 
 
 }//end PizzaStore
