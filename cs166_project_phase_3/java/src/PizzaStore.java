@@ -117,7 +117,7 @@ public class PizzaStore {
          colWidths[i - 1] = Math.max(rsmd.getColumnName(i).length(), defaultWidth);
       }
 
-   // Build header row with dividers
+      // Build header row with dividers
       StringBuilder header = new StringBuilder();
       header.append("|");
       
@@ -127,7 +127,7 @@ public class PizzaStore {
       
       System.out.println(header.toString());
 
-   // Build a divider line that separates header from rows and between rows
+      // Build a divider line that separates header from rows and between rows
       StringBuilder divider = new StringBuilder();
       divider.append("+");
       for (int i = 1; i <= numCol; i++) {
@@ -332,8 +332,8 @@ public class PizzaStore {
                    case 1: viewProfile(esql, authorisedUser); break;
                    case 2: updateProfile(esql, authorisedUser); break;
                    case 3: viewMenu(esql); break;
-                   case 4: placeOrder(esql, authorisedUser); break;
-                   case 5: viewAllOrders(esql, authorisedUser); break;
+                   case 4: placeOrder(esql,authorisedUser); break;
+                   case 5: viewAllOrders(esql,authorisedUser); break;
                    case 6: viewRecentOrders(esql); break;
                    case 7: viewOrderInfo(esql); break;
                    case 8: viewStores(esql); break;
@@ -444,7 +444,7 @@ public class PizzaStore {
 
          else {
 
-             System.out.println("Invlaid login!");
+             System.out.println("Invalid login!");
              return null;
          }
       }
@@ -473,7 +473,7 @@ public class PizzaStore {
          
          System.err.println(e.getMessage());
       }
-   }
+   }//end viewProfile
 
    public static void updateProfile(PizzaStore esql, String username) {
 
@@ -543,7 +543,7 @@ public class PizzaStore {
          System.err.println(e.getMessage());
       }
 
-   }
+   }//end updateProfile
 
    public static void updateUser(PizzaStore esql, String username) {
 
@@ -618,7 +618,7 @@ public class PizzaStore {
          
          System.err.println(e.getMessage());
       }
-   }
+   }//end updateUser
 
    public static void viewMenu(PizzaStore esql) {
 
@@ -720,7 +720,7 @@ public class PizzaStore {
          
          System.err.println(e.getMessage());
       }
-   }
+   }//end viewMenu
 
    public static void viewAllOrders(PizzaStore esql, String username) {
     try {
