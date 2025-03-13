@@ -740,7 +740,7 @@ public class PizzaStore {
                 System.out.println("Order Date and Time: " + row.get(4));
                 System.out.println("Order Status: " + row.get(5));
                 System.out.println("--------------------------------------------------");
-            }
+            } 
         }
     } catch (Exception e) {
         System.err.println(e.getMessage());
