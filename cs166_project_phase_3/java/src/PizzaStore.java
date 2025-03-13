@@ -722,6 +722,30 @@ public class PizzaStore {
       }
    }
 
+   public static void viewAllOrders(PizzaStore esql) {
+    try {
+        String query = "SELECT * FROM FoodOrder";
+        
+        List<List<String>> result = esql.executeQueryAndReturnResult(query);
+
+        if (result.isEmpty()) {
+            System.out.println("No orders found.");
+        } else {
+            System.out.println("All Orders:");
+            for (List<String> row : result) {
+                System.out.println("Order ID: " + row.get(0));
+                System.out.println("User: " + row.get(1));
+                System.out.println("Store ID: " + row.get(2));
+                System.out.println("Order Date: " + row.get(3));  
+                System.out.println("Total Price: " + row.get(4));  
+                System.out.println("--------------------------------------------------");
+            }
+        }
+    } catch (Exception e) {
+        System.err.println(e.getMessage());
+    }
+}
+
    public static void viewAllOrders(PizzaStore esql) {}
    public static void placeOrder(PizzaStore esql) {}
    public static void viewRecentOrders(PizzaStore esql) {}
