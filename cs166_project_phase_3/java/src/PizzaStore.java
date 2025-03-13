@@ -332,7 +332,7 @@ public class PizzaStore {
                    case 1: viewProfile(esql, authorisedUser); break;
                    case 2: updateProfile(esql, authorisedUser); break;
                    case 3: viewMenu(esql); break;
-                   case 4: placeOrder(esql); break;
+                   case 4: placeOrder(esql,authorisedUser); break;
                    case 5: viewAllOrders(esql,authorisedUser); break;
                    case 6: viewRecentOrders(esql); break;
                    case 7: viewOrderInfo(esql); break;
@@ -724,24 +724,21 @@ public class PizzaStore {
 
    public static void viewAllOrders(PizzaStore esql, String username) {
     try {
-        // Query to select orders only for the logged-in user
         String query = "SELECT * FROM FoodOrder f WHERE f.login = '" + username + "'";
         
-        // Execute the query and return the result as a list of lists
         List<List<String>> result = esql.executeQueryAndReturnResult(query);
 
-        // Check if the user has any order history
         if (result.isEmpty()) {
             System.out.println("You have no previous orders.");
         } else {
-            // Print the order history for the user
             System.out.println("Your Order History:");
             for (List<String> row : result) {
                 System.out.println("Order ID: " + row.get(0));
-                System.out.println("Store ID: " + row.get(1));
-                System.out.println("Order Date: " + row.get(2));  // Assuming order date is in row[2]
-                System.out.println("Total Price: " + row.get(3));  // Assuming total price is in row[3]
-                System.out.println("Order Status: " + row.get(4)); // Assuming order status is in row[4]
+                System.out.println("User: " + row.get(1));
+                System.out.println("Store ID: " + row.get(2));  
+                System.out.println("Total Price: $" + row.get(3));  
+                System.out.println("Order Date and Time: " + row.get(4));
+                System.out.println("Order Status: " + row.get(5));
                 System.out.println("--------------------------------------------------");
             }
         }
@@ -749,6 +746,67 @@ public class PizzaStore {
         System.err.println(e.getMessage());
     }
    }//end viewAllOrders
+
+   public static void placeOrder(PizzaStore esql, String username) {
+    try {
+        System.out.println("Enter the store ID where you want to place your order: ");
+        int storeID = Integer.parseInt(in.readLine());
+
+        List<String> items = new ArrayList<>();
+        List<Integer> quantities = new ArrayList<>();
+        double totalPrice = 0.0;
+
+        while (true) {
+            System.out.println("Enter item name or hit enter to finish: ");
+            String itemName = in.readLine().trim();
+            if (itemName.equalsIgnoreCase("done") || itemName.equalsIgnoreCase("")) break;
+
+            String itemQuery = "SELECT price FROM Items WHERE itemName = '" + itemName + "'";
+            List<List<String>> itemResult = esql.executeQueryAndReturnResult(itemQuery);
+
+            if (itemResult.isEmpty()) {
+                System.out.println("Item not found! Please enter a valid item name.");
+                continue;
+            }
+
+            double itemPrice = Double.parseDouble(itemResult.get(0).get(0));
+
+            System.out.println("Enter quantity: ");
+            int quantity = Integer.parseInt(in.readLine());
+
+            items.add(itemName);
+            quantities.add(quantity);
+            totalPrice += itemPrice * quantity;
+        }
+
+        if (items.isEmpty()) {
+            System.out.println("No items were added to the order. Cancelling order.");
+            return;
+        }
+
+        String orderIDQuery = "SELECT COALESCE(MAX(orderID), 0) + 1 FROM FoodOrder";
+        List<List<String>> orderIDResult = esql.executeQueryAndReturnResult(orderIDQuery);
+        int orderID = Integer.parseInt(orderIDResult.get(0).get(0));
+
+         //add to table
+        String insertOrderQuery = "INSERT INTO FoodOrder(orderID, login, storeID, totalPrice, orderTimestamp, orderStatus) " +
+                                  "VALUES (" + orderID + ", '" + username + "', " + storeID + ", " + totalPrice + ", NOW(), 'Placed')";
+        esql.executeUpdate(insertOrderQuery);
+
+        for (int i = 0; i < items.size(); i++) {
+            String insertItemQuery = "INSERT INTO ItemsInOrder(orderID, itemName, quantity) " +
+                                     "VALUES (" + orderID + ", '" + items.get(i) + "', " + quantities.get(i) + ")";
+            esql.executeUpdate(insertItemQuery);
+        }
+
+        System.out.println("Order placed successfully! Order ID: " + orderID);
+        System.out.println("Total Price: $" + String.format("%.2f", totalPrice));
+
+    } catch (Exception e) {
+        System.err.println("Error placing order: " + e.getMessage());
+    }
+}
+
  
 
    // public static void viewAllOrders(PizzaStore esql) {}
