@@ -334,7 +334,7 @@ public class PizzaStore {
                    case 3: viewMenu(esql); break;
                    case 4: placeOrder(esql,authorisedUser); break;
                    case 5: viewAllOrders(esql,authorisedUser); break;
-                   case 6: viewRecentOrders(esql); break;
+                   case 6: viewRecentOrders(esql,authorisedUser); break;
                    case 7: viewOrderInfo(esql); break;
                    case 8: viewStores(esql); break;
                    case 9: updateOrderStatus(esql); break;
@@ -743,7 +743,7 @@ public class PizzaStore {
                 System.out.println("Total Price: " + row.get(3));  // Assuming total price is in row[3]
                 System.out.println("Order Status: " + row.get(4)); // Assuming order status is in row[4]
                 System.out.println("--------------------------------------------------");
-            }
+            } 
         }
     } catch (Exception e) {
         System.err.println(e.getMessage());
@@ -808,9 +808,33 @@ public class PizzaStore {
     } catch (Exception e) {
         System.err.println("Error placing order: " + e.getMessage());
     }
-   }
+   }//end placeOrdre
 
-   public static void viewRecentOrders(PizzaStore esql) {}
+    public static void viewRecentOrders(PizzaStore esql, String username) {
+    try {
+        String query = "SELECT * FROM FoodOrder f WHERE f.login = '" + username + "' LIMIT 5";
+        
+        List<List<String>> result = esql.executeQueryAndReturnResult(query);
+
+        if (result.isEmpty()) {
+            System.out.println("You have no previous orders.");
+        } else {
+            System.out.println("Your Order History:");
+            for (List<String> row : result) {
+                System.out.println("Order ID: " + row.get(0));
+                System.out.println("User: " + row.get(1));
+                System.out.println("Store ID: " + row.get(2));  
+                System.out.println("Total Price: $" + row.get(3));  
+                System.out.println("Order Date and Time: " + row.get(4));
+                System.out.println("Order Status: " + row.get(5));
+                System.out.println("--------------------------------------------------");
+            } 
+        }
+    } catch (Exception e) {
+        System.err.println(e.getMessage());
+    }
+   }//end viewRecentOrders
+
    public static void viewOrderInfo(PizzaStore esql) {}
    public static void updateOrderStatus(PizzaStore esql) {}
    public static void viewStores(PizzaStore esql) {}
