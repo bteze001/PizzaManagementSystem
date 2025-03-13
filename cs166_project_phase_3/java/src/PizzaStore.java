@@ -831,11 +831,7 @@ public class PizzaStore {
         System.err.println(e.getMessage());
     }
    }//end viewRecentOrders
- 
 
-   // public static void viewAllOrders(PizzaStore esql) {}
-   // public static void placeOrder(PizzaStore esql) {}
-   public static void viewRecentOrders(PizzaStore esql) {}
    public static void viewOrderInfo(PizzaStore esql) {}
    public static void viewStores(PizzaStore esql) {}
    public static void updateOrderStatus(PizzaStore esql) {}
