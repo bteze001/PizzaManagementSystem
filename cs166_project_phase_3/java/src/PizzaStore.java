@@ -748,11 +748,11 @@ public class PizzaStore {
     } catch (Exception e) {
         System.err.println(e.getMessage());
     }
-}
+   }//end viewAllOrders
 
 
    // public static void viewAllOrders(PizzaStore esql) {}
-   public static void placeOrder(PizzaStore esql) {}
+   // public static void placeOrder(PizzaStore esql) {}
    public static void viewRecentOrders(PizzaStore esql) {}
    public static void viewOrderInfo(PizzaStore esql) {}
    public static void viewStores(PizzaStore esql) {}
