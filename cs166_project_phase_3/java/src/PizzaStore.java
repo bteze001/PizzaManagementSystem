@@ -813,7 +813,21 @@ public class PizzaStore {
    public static void viewRecentOrders(PizzaStore esql) {}
    public static void viewOrderInfo(PizzaStore esql) {}
    public static void updateOrderStatus(PizzaStore esql) {}
-   public static void viewStores(PizzaStore esql) {}
+   public static void viewStores(PizzaStore esql) {
+
+      try {
+
+         String viewQuery = "SELECT * FROM Store";
+         esql.executeQueryAndPrintResult(viewQuery);
+
+      }
+
+      catch (Exception e) {
+         
+         System.err.println(e.getMessage());
+      }
+
+   }
    public static void updateMenu(PizzaStore esql, String username) {
 
       try {
@@ -930,3 +944,4 @@ public class PizzaStore {
    }
 
 }
+
