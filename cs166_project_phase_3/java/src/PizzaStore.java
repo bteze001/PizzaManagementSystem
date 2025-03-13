@@ -335,7 +335,7 @@ public class PizzaStore {
                    case 4: placeOrder(esql,authorisedUser); break;
                    case 5: viewAllOrders(esql,authorisedUser); break;
                    case 6: viewRecentOrders(esql,authorisedUser); break;
-                   case 7: viewOrderInfo(esql); break;
+                   case 7: viewOrderInfo(esql, authorisedUser); break;
                    case 8: viewStores(esql); break;
                    case 9: updateOrderStatus(esql); break;
                    case 10: updateMenu(esql, authorisedUser); break;
@@ -823,7 +823,7 @@ public class PizzaStore {
          
          if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
            query += " f WHERE f.login = '" + username + "'";
-           System.out.println("user is NOT authorized");
+         //   System.out.println("user is NOT authorized");
          }
          query += " LIMIT 5;";
          result = esql.executeQueryAndReturnResult(query);
@@ -848,9 +848,46 @@ public class PizzaStore {
       }
    }//end viewRecentOrder
    
-   public static void viewOrderInfo(PizzaStore esql) {}
+   public static void viewOrderInfo(PizzaStore esql, String username) {
+      // String query = "SELECT * FROM FoodOrder";
+      // String checkQuery = "SELECT role FROM Users WHERE login = '" + username + "'";
+      // List<List<String>> result = esql.executeQueryAndReturnResult(checkQuery);
+      // if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
+      //    query += " f WHERE f.login = '" + username + "' AND ";
+      // }
+
+      
+   }
    public static void updateOrderStatus(PizzaStore esql) {}
-   public static void viewStores(PizzaStore esql) {}
+
+   public static void viewStores(PizzaStore esql) {
+      System.out.println("Hello");
+    try {
+        // Query to retrieve all store information
+        String query = "SELECT storeID, address, city, state, isOpen, reviewScore FROM Store";
+        List<List<String>> result = esql.executeQueryAndReturnResult(query);
+
+        if (result.isEmpty()) {
+            System.out.println("No stores available.");
+            return;
+        }
+
+        // Display store details
+        System.out.println("\nAvailable Stores:");
+        System.out.println("--------------------------------------------------");
+        for (List<String> row : result) {
+            System.out.println("Store ID: " + row.get(0));
+            System.out.println("Address: " + row.get(1) + ", " + row.get(2) + ", " + row.get(3));
+            System.out.println("Open Status: " + row.get(4));
+            System.out.println("Review Score: " + (row.get(5) != null ? row.get(5) : "No reviews yet"));
+            System.out.println("--------------------------------------------------");
+        }
+
+    } catch (Exception e) {
+        System.err.println("Error: " + e.getMessage());
+    }
+}
+
    
    public static void updateMenu(PizzaStore esql, String username) {
 
