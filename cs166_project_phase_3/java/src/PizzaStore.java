@@ -819,7 +819,7 @@ public class PizzaStore {
          String query = "SELECT * FROM FoodOrder";
          String checkQuery = "SELECT role FROM Users WHERE login = '" + username + "'";
          List<List<String>> result = esql.executeQueryAndReturnResult(checkQuery);
-         System.out.println(result.get(0).get(0).trim());
+         // System.out.println(result.get(0).get(0).trim());
          
          if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
            query += " f WHERE f.login = '" + username + "'";
@@ -851,6 +851,7 @@ public class PizzaStore {
    public static void viewOrderInfo(PizzaStore esql) {}
    public static void updateOrderStatus(PizzaStore esql) {}
    public static void viewStores(PizzaStore esql) {}
+   
    public static void updateMenu(PizzaStore esql, String username) {
 
       try {
