@@ -117,7 +117,7 @@ public class PizzaStore {
          colWidths[i - 1] = Math.max(rsmd.getColumnName(i).length(), defaultWidth);
       }
 
-   // Build header row with dividers
+      // Build header row with dividers
       StringBuilder header = new StringBuilder();
       header.append("|");
       
@@ -127,7 +127,7 @@ public class PizzaStore {
       
       System.out.println(header.toString());
 
-   // Build a divider line that separates header from rows and between rows
+      // Build a divider line that separates header from rows and between rows
       StringBuilder divider = new StringBuilder();
       divider.append("+");
       for (int i = 1; i <= numCol; i++) {
@@ -333,7 +333,7 @@ public class PizzaStore {
                    case 2: updateProfile(esql, authorisedUser); break;
                    case 3: viewMenu(esql); break;
                    case 4: placeOrder(esql); break;
-                   case 5: viewAllOrders(esql); break;
+                   case 5: viewAllOrders(esql,authorisedUser); break;
                    case 6: viewRecentOrders(esql); break;
                    case 7: viewOrderInfo(esql); break;
                    case 8: viewStores(esql); break;
@@ -473,7 +473,7 @@ public class PizzaStore {
          
          System.err.println(e.getMessage());
       }
-   }
+   }//end viewProfile
 
    public static void updateProfile(PizzaStore esql, String username) {
 
@@ -543,7 +543,7 @@ public class PizzaStore {
          System.err.println(e.getMessage());
       }
 
-   }
+   }//end updateProfile
 
    public static void updateUser(PizzaStore esql, String username) {
 
@@ -618,7 +618,7 @@ public class PizzaStore {
          
          System.err.println(e.getMessage());
       }
-   }
+   }//end updateUser
 
    public static void viewMenu(PizzaStore esql) {
 
@@ -720,24 +720,28 @@ public class PizzaStore {
          
          System.err.println(e.getMessage());
       }
-   }
+   }//end viewMenu
 
-   public static void viewAllOrders(PizzaStore esql) {
+   public static void viewAllOrders(PizzaStore esql, String username) {
     try {
-        String query = "SELECT * FROM FoodOrder";
+        // Query to select orders only for the logged-in user
+        String query = "SELECT * FROM FoodOrder f WHERE f.login = '" + username + "'";
         
+        // Execute the query and return the result as a list of lists
         List<List<String>> result = esql.executeQueryAndReturnResult(query);
 
+        // Check if the user has any order history
         if (result.isEmpty()) {
-            System.out.println("No orders found.");
+            System.out.println("You have no previous orders.");
         } else {
-            System.out.println("All Orders:");
+            // Print the order history for the user
+            System.out.println("Your Order History:");
             for (List<String> row : result) {
                 System.out.println("Order ID: " + row.get(0));
-                System.out.println("User: " + row.get(1));
-                System.out.println("Store ID: " + row.get(2));
-                System.out.println("Order Date: " + row.get(3));  
-                System.out.println("Total Price: " + row.get(4));  
+                System.out.println("Store ID: " + row.get(1));
+                System.out.println("Order Date: " + row.get(2));  // Assuming order date is in row[2]
+                System.out.println("Total Price: " + row.get(3));  // Assuming total price is in row[3]
+                System.out.println("Order Status: " + row.get(4)); // Assuming order status is in row[4]
                 System.out.println("--------------------------------------------------");
             }
         }
@@ -745,6 +749,7 @@ public class PizzaStore {
         System.err.println(e.getMessage());
     }
 }
+
 
    // public static void viewAllOrders(PizzaStore esql) {}
    public static void placeOrder(PizzaStore esql) {}
