@@ -338,7 +338,7 @@ public class PizzaStore {
                    case 7: viewOrderInfo(esql); break;
                    case 8: viewStores(esql); break;
                    case 9: updateOrderStatus(esql); break;
-                   case 10: updateMenu(esql); break;
+                   case 10: updateMenu(esql, authorisedUser); break;
                    case 11: updateUser(esql, authorisedUser); break;
 
 
@@ -724,14 +724,21 @@ public class PizzaStore {
 
    public static void viewAllOrders(PizzaStore esql, String username) {
     try {
-        String query = "SELECT * FROM FoodOrder f WHERE f.login = '" + username + "'";
-        
-        List<List<String>> result = esql.executeQueryAndReturnResult(query);
+         String query = "SELECT * FROM FoodOrder";
+         String checkQuery = "SELECT role FROM Users WHERE login = '" + username + "'";
+         List<List<String>> result = esql.executeQueryAndReturnResult(checkQuery);
+         System.out.println(result.get(0).get(0).trim());
+         
+         if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
+           query += " f WHERE f.login = '" + username + "'";
+           System.out.println("user is NOT authorized");
+         }
+         result = esql.executeQueryAndReturnResult(query);
 
         if (result.isEmpty()) {
             System.out.println("You have no previous orders.");
         } else {
-            System.out.println("Your Order History:");
+            System.out.println("Order History:");
             for (List<String> row : result) {
                 System.out.println("Order ID: " + row.get(0));
                 System.out.println("User: " + row.get(1));
@@ -809,14 +816,23 @@ public class PizzaStore {
 
    public static void viewRecentOrders(PizzaStore esql, String username) {
       try {
-        String query = "SELECT * FROM FoodOrder f WHERE f.login = '" + username + "' LIMIT 5";
-        
-        List<List<String>> result = esql.executeQueryAndReturnResult(query);
+         String query = "SELECT * FROM FoodOrder";
+         String checkQuery = "SELECT role FROM Users WHERE login = '" + username + "'";
+         List<List<String>> result = esql.executeQueryAndReturnResult(checkQuery);
+         System.out.println(result.get(0).get(0).trim());
+         
+         if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
+           query += " f WHERE f.login = '" + username + "'";
+           System.out.println("user is NOT authorized");
+         }
+         query += " LIMIT 5;";
+         result = esql.executeQueryAndReturnResult(query);
+
 
         if (result.isEmpty()) {
             System.out.println("You have no previous orders.");
         } else {
-            System.out.println("Your Order History:");
+            System.out.println("Order History:");
             for (List<String> row : result) {
                 System.out.println("Order ID: " + row.get(0));
                 System.out.println("User: " + row.get(1));
