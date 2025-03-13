@@ -444,7 +444,7 @@ public class PizzaStore {
 
          else {
 
-             System.out.println("Invlaid login!");
+             System.out.println("Invalid login!");
              return null;
          }
       }
@@ -746,7 +746,7 @@ public class PizzaStore {
     }
 }
 
-   public static void viewAllOrders(PizzaStore esql) {}
+   // public static void viewAllOrders(PizzaStore esql) {}
    public static void placeOrder(PizzaStore esql) {}
    public static void viewRecentOrders(PizzaStore esql) {}
    public static void viewOrderInfo(PizzaStore esql) {}
