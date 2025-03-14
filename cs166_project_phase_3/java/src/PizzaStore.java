@@ -812,7 +812,7 @@ public class PizzaStore {
     } catch (Exception e) {
         System.err.println("Error placing order: " + e.getMessage());
     }
-   }
+   }//end placeOrder
 
    public static void viewRecentOrders(PizzaStore esql, String username) {
       try {
@@ -849,19 +849,47 @@ public class PizzaStore {
    }//end viewRecentOrder
    
    public static void viewOrderInfo(PizzaStore esql, String username) {
-      // String query = "SELECT * FROM FoodOrder";
-      // String checkQuery = "SELECT role FROM Users WHERE login = '" + username + "'";
-      // List<List<String>> result = esql.executeQueryAndReturnResult(checkQuery);
-      // if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
-      //    query += " f WHERE f.login = '" + username + "' AND ";
-      // }
-
+      try {
+         String checkQuery = "SELECT role FROM Users WHERE login = '" + username + "'";
+         List<List<String>> result = esql.executeQueryAndReturnResult(checkQuery);
+         int privs = 1; 
+         if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
+            privs = 0; 
+         }
+   
+         System.out.println("Enter the ID of the order you'd like to view: "); 
+         Integer orderNum = Integer.parseInt(in.readLine());
+         
+         String query = "SELECT * FROM FoodOrder WHERE orderID = " + orderNum;//selecting
+         if (privs == 0){
+            query += " AND login = '" + username + "'"; //look up order for that specific user
+            result = esql.executeQueryAndReturnResult(query);
+            if (result.isEmpty()){
+               System.out.println("\nSorry, you are not authorized to view this order.\n");
+               return;
+            }
+         }
+         else {
+            result = esql.executeQueryAndReturnResult(query);
+         }
+         for (List<String> row : result) {
+            System.out.println("Order ID: " + row.get(0));
+            System.out.println("User: " + row.get(1));
+            System.out.println("Store ID: " + row.get(2));  
+            System.out.println("Total Price: $" + row.get(3));  
+            System.out.println("Order Date and Time: " + row.get(4));
+            System.out.println("Order Status: " + row.get(5));
+            System.out.println("--------------------------------------------------");
+        } 
+      } catch (Exception e) {
+         System.err.println("Error: " + e.getMessage());
+      }
       
-   }
+   }//end viewOrderInfo
+
    public static void updateOrderStatus(PizzaStore esql) {}
 
    public static void viewStores(PizzaStore esql) {
-      System.out.println("Hello");
     try {
         // Query to retrieve all store information
         String query = "SELECT storeID, address, city, state, isOpen, reviewScore FROM Store";
@@ -886,8 +914,7 @@ public class PizzaStore {
     } catch (Exception e) {
         System.err.println("Error: " + e.getMessage());
     }
-}
-
+   }//end viewStores
    
    public static void updateMenu(PizzaStore esql, String username) {
 
@@ -1002,7 +1029,7 @@ public class PizzaStore {
          
          System.err.println(e.getMessage());
       }
-   }
+   }//end updateMenu
 
 }
 
