@@ -297,12 +297,12 @@ public class PizzaStore {
             System.out.println("---------");
             System.out.println("1. Create user");
             System.out.println("2. Log in");
-            System.out.println("9. < EXIT");
+            System.out.println("0. < EXIT");
             String authorisedUser = null;
             switch (readChoice()){
                case 1: CreateUser(esql); break;
                case 2: authorisedUser = LogIn(esql); break;
-               case 9: keepon = false; break;
+               case 0: keepon = false; break;
                default : System.out.println("Unrecognized choice!"); break;
             }//end switch
             if (authorisedUser != null) {
@@ -797,7 +797,7 @@ public class PizzaStore {
 
          //add to table
         String insertOrderQuery = "INSERT INTO FoodOrder(orderID, login, storeID, totalPrice, orderTimestamp, orderStatus) " +
-                                  "VALUES (" + orderID + ", '" + username + "', " + storeID + ", " + totalPrice + ", NOW(), 'Placed')";
+                                  "VALUES (" + orderID + ", '" + username + "', " + storeID + ", " + totalPrice + ", NOW(), 'incomplete')";
         esql.executeUpdate(insertOrderQuery);
 
         for (int i = 0; i < items.size(); i++) {
