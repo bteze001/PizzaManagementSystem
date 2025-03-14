@@ -337,7 +337,7 @@ public class PizzaStore {
                    case 6: viewRecentOrders(esql,authorisedUser); break;
                    case 7: viewOrderInfo(esql, authorisedUser); break;
                    case 8: viewStores(esql); break;
-                   case 9: updateOrderStatus(esql); break;
+                   case 9: updateOrderStatus(esql, authorisedUser); break;
                    case 10: updateMenu(esql, authorisedUser); break;
                    case 11: updateUser(esql, authorisedUser); break;
 
@@ -887,7 +887,48 @@ public class PizzaStore {
       
    }//end viewOrderInfo
 
-   public static void updateOrderStatus(PizzaStore esql) {}
+   public static void updateOrderStatus(PizzaStore esql, String username) {
+      try {
+         String checkQuery = "SELECT role FROM Users WHERE login = '" + username + "'";
+         List<List<String>> result = esql.executeQueryAndReturnResult(checkQuery);
+         // int privs = 1; 
+         if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
+            System.out.println("\nSorry, you are not authorized to update the status of an order.\n");
+            return;
+         }
+         System.out.println("Enter the ID of the order you'd like to update: ");
+         Integer orderNum = Integer.parseInt(in.readLine());
+
+         String query = "SELECT orderStatus FROM FoodOrder WHERE orderID = " + orderNum;
+         result = esql.executeQueryAndReturnResult(query);
+         if (result.isEmpty()) {
+            System.out.println("Order ID " + orderNum + " not found.");
+            return;
+         }
+         String currentStatus = result.get(0).get(0).trim();
+         System.out.println("Current Order Status: " + currentStatus);
+
+         String newStatus;
+        while (true) {
+            System.out.print("Enter the new status (complete, incomplete) or press Enter to exit: ");
+            newStatus = in.readLine().trim().toLowerCase();
+
+            if (newStatus.isEmpty()) {
+                System.out.println("Update cancelled.");
+                return;
+            } else if (newStatus.equals("complete") || newStatus.equals("incomplete")) {
+                break; // Valid input, exit loop
+            } else {
+                System.out.println("Invalid status. Please enter 'complete' or 'incomplete'.");
+            }
+        }
+         String updateQuery = "UPDATE FoodOrder SET orderStatus = '" + newStatus + "' WHERE orderID = " + orderNum;
+         esql.executeUpdate(updateQuery);
+         System.out.println("Order ID " + orderNum + " status updated successfully to: " + newStatus);
+      } catch (Exception e) {
+         System.err.println(e.getMessage());
+      }
+   }
 
    public static void viewStores(PizzaStore esql) {
     try {
@@ -1026,7 +1067,6 @@ public class PizzaStore {
       }
 
       catch (Exception e) {
-         
          System.err.println(e.getMessage());
       }
    }//end updateMenu
