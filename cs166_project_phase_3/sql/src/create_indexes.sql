@@ -1,6 +1,6 @@
-IF EXISTS DROP INDEX users_login; 
-IF EXISTS DROP INDEX foodorder_login; 
-IF EXISTS DROP INDEX foodorder_storeID; 
+DROP INDEX IF EXISTS users_login;
+DROP INDEX IF EXISTS foodorder_login;
+DROP INDEX IF EXISTS foodorder_storeID;
 
 
 CREATE INDEX users_login ON Users(login);
