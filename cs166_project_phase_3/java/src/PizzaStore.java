@@ -94,81 +94,93 @@ public class PizzaStore {
     * @return the number of rows returned
     * @throws java.sql.SQLException when failed to execute the query
     */
-   public int executeQueryAndPrintResult (String query) throws SQLException {
-      // creates a statement object
-      Statement stmt = this._connection.createStatement ();
+   public int executeQueryAndPrintResult(String query) throws SQLException {
+    
+      Statement stmt = this._connection.createStatement();
 
-      // issues the query instruction
-      ResultSet rs = stmt.executeQuery (query);
+      ResultSet rs = stmt.executeQuery(query);
 
-      /*
-       ** obtains the metadata object for the returned result set.  The metadata
-       ** contains row and column info.
-       */
-      ResultSetMetaData rsmd = rs.getMetaData ();
-      int numCol = rsmd.getColumnCount ();
+      ResultSetMetaData rsmd = rs.getMetaData();
+      int numCol = rsmd.getColumnCount();
       int rowCount = 0;
 
-      int defaultWidth = 40;
-
+      int defaultWidth = 35;
       int[] colWidths = new int[numCol];
 
       for (int i = 1; i <= numCol; i++) {
-         colWidths[i - 1] = Math.max(rsmd.getColumnName(i).length(), defaultWidth);
+        colWidths[i - 1] = Math.max(rsmd.getColumnName(i).length(), defaultWidth);
       }
 
-      // Build header row with dividers
       StringBuilder header = new StringBuilder();
       header.append("|");
-      
       for (int i = 1; i <= numCol; i++) {
-         header.append(String.format(" %-" + colWidths[i - 1] + "." + colWidths[i - 1] + "s |", rsmd.getColumnName(i)));
+        header.append(String.format(" %-" + colWidths[i - 1] + "s |", rsmd.getColumnName(i)));
       }
-      
       System.out.println(header.toString());
 
-      // Build a divider line that separates header from rows and between rows
       StringBuilder divider = new StringBuilder();
       divider.append("+");
       for (int i = 1; i <= numCol; i++) {
-         for (int j = 0; j < colWidths[i - 1] + 2; j++) { 
+        for (int j = 0; j < colWidths[i - 1] + 2; j++) { 
             divider.append("-");
-         }
-         divider.append("+");
-      }
-      System.out.println(divider.toString());
+        }
+        divider.append("+");
+    }
+
+    System.out.println(divider.toString());
 
       while (rs.next()){
-         StringBuilder row = new StringBuilder();
-         row.append("|");
+       
+         List<List<String>> wrappedCells = new ArrayList<>();
+         int maxLines = 0; 
          for (int i = 1; i <= numCol; i++){
-            row.append(String.format(" %-" + colWidths[i - 1] + "." + colWidths[i - 1] + "s |", rs.getString(i)));
-         }
-         System.out.println(row.toString());
-         System.out.println(divider.toString()); // divider after each row
-         rowCount++;
-      }
-      stmt.close();
-      return rowCount;
+            String cell = rs.getString(i);
+            if (cell == null) {
+                cell = "";
+            }
+            List<String> wrapped = wrapText(cell, colWidths[i - 1]);
+            wrappedCells.add(wrapped);
+            if (wrapped.size() > maxLines) {
+                maxLines = wrapped.size();
+            }
+        }
 
-      // iterates through the result set and output them to standard out.
-      // boolean outputHeader = true;
-      // while (rs.next()){
-		//  if(outputHeader){
-		// 	for(int i = 1; i <= numCol; i++){
-		// 	System.out.print(rsmd.getColumnName(i) + "\t");
-		// 	}
-		// 	System.out.println();
-		// 	outputHeader = false;
-		//  }
-      //    for (int i=1; i<=numCol; ++i)
-      //       System.out.print (rs.getString (i) + "\t");
-      //    System.out.println ();
-      //    ++rowCount;
-      // }//end while
-      // stmt.close();
-      // return rowCount;
-   }//end executeQuery
+        for (int line = 0; line < maxLines; line++){
+            StringBuilder rowBuilder = new StringBuilder();
+            rowBuilder.append("|");
+            for (int i = 0; i < numCol; i++){
+                String cellLine = "";
+      
+                if (line < wrappedCells.get(i).size()){
+                    cellLine = wrappedCells.get(i).get(line);
+                }
+                rowBuilder.append(String.format(" %-" + colWidths[i] + "s |", cellLine));
+            }
+            System.out.println(rowBuilder.toString());
+        }
+        
+        System.out.println(divider.toString());
+        rowCount++;
+    }
+    stmt.close();
+    return rowCount;
+}
+
+   /**
+   * Helper method that splits the given text into a list of strings,
+   * each with a maximum length of the specified width.
+   */
+   public List<String> wrapText(String text, int width) {
+      List<String> lines = new ArrayList<>();
+      int start = 0;
+      while (start < text.length()) {
+        int end = Math.min(start + width, text.length());
+        lines.add(text.substring(start, end));
+        start += width;
+      }
+
+      return lines;
+   }
 
    /**
     * Method to execute an input query SQL instruction (i.e. SELECT).  This
@@ -335,10 +347,10 @@ public class PizzaStore {
                    case 4: placeOrder(esql,authorisedUser); break;
                    case 5: viewAllOrders(esql,authorisedUser); break;
                    case 6: viewRecentOrders(esql,authorisedUser); break;
-                   case 7: viewOrderInfo(esql); break;
+                   case 7: viewOrderInfo(esql, authorisedUser); break;
                    case 8: viewStores(esql); break;
                    case 9: updateOrderStatus(esql); break;
-                   case 10: updateMenu(esql); break;
+                   case 10: updateMenu(esql, authorisedUser); break;
                    case 11: updateUser(esql, authorisedUser); break;
 
 
@@ -499,6 +511,9 @@ public class PizzaStore {
 
                System.out.println ("Password changed successsfully!");
 
+               String newProfile = "SELECT * FROM Users WHERE login = '" + username + "'";
+               esql.executeQueryAndPrintResult(newProfile);
+
                break;
 
             case 2: 
@@ -511,6 +526,9 @@ public class PizzaStore {
 
                System.out.println ("Phone number changed successsfully!");
 
+               String newProfile2 = "SELECT * FROM Users WHERE login = '" + username + "'";
+               esql.executeQueryAndPrintResult(newProfile2);
+
                break;
 
             case 3:
@@ -522,6 +540,9 @@ public class PizzaStore {
                esql.executeUpdate(favoriteQuery);
 
                System.out.println ("Favorite Items changed successsfully!");
+
+               String newProfile3 = "SELECT * FROM Users WHERE login = '" + username + "'";
+               esql.executeQueryAndPrintResult(newProfile3);
 
                break;
 
@@ -724,14 +745,21 @@ public class PizzaStore {
 
    public static void viewAllOrders(PizzaStore esql, String username) {
     try {
-        String query = "SELECT * FROM FoodOrder f WHERE f.login = '" + username + "'";
-        
-        List<List<String>> result = esql.executeQueryAndReturnResult(query);
+         String query = "SELECT * FROM FoodOrder";
+         String checkQuery = "SELECT role FROM Users WHERE login = '" + username + "'";
+         List<List<String>> result = esql.executeQueryAndReturnResult(checkQuery);
+         System.out.println(result.get(0).get(0).trim());
+         
+         if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
+           query += " f WHERE f.login = '" + username + "'";
+           System.out.println("user is NOT authorized");
+         }
+         result = esql.executeQueryAndReturnResult(query);
 
         if (result.isEmpty()) {
             System.out.println("You have no previous orders.");
         } else {
-            System.out.println("Your Order History:");
+            System.out.println("Order History:");
             for (List<String> row : result) {
                 System.out.println("Order ID: " + row.get(0));
                 System.out.println("User: " + row.get(1));
@@ -805,18 +833,27 @@ public class PizzaStore {
     } catch (Exception e) {
         System.err.println("Error placing order: " + e.getMessage());
     }
-   }
+   }//end placeOrder
 
    public static void viewRecentOrders(PizzaStore esql, String username) {
       try {
-        String query = "SELECT * FROM FoodOrder f WHERE f.login = '" + username + "' LIMIT 5";
-        
-        List<List<String>> result = esql.executeQueryAndReturnResult(query);
+         String query = "SELECT * FROM FoodOrder";
+         String checkQuery = "SELECT role FROM Users WHERE login = '" + username + "'";
+         List<List<String>> result = esql.executeQueryAndReturnResult(checkQuery);
+         // System.out.println(result.get(0).get(0).trim());
+         
+         if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
+           query += " f WHERE f.login = '" + username + "'";
+         //   System.out.println("user is NOT authorized");
+         }
+         query += " LIMIT 5;";
+         result = esql.executeQueryAndReturnResult(query);
+
 
         if (result.isEmpty()) {
             System.out.println("You have no previous orders.");
         } else {
-            System.out.println("Your Order History:");
+            System.out.println("Order History:");
             for (List<String> row : result) {
                 System.out.println("Order ID: " + row.get(0));
                 System.out.println("User: " + row.get(1));
@@ -832,26 +869,74 @@ public class PizzaStore {
       }
    }//end viewRecentOrder
    
-   public static void viewOrderInfo(PizzaStore esql) {}
-   public static void updateOrderStatus(PizzaStore esql) {}
-   public static void viewStores(PizzaStore esql) {
-
+   public static void viewOrderInfo(PizzaStore esql, String username) {
       try {
- 
-          String viewQuery = "SELECT * FROM Store";
-          esql.executeQueryAndPrintResult(viewQuery);
- 
-       }
- 
-       catch (Exception e) {
-          
-          System.err.println(e.getMessage());
-       }
- 
+         String checkQuery = "SELECT role FROM Users WHERE login = '" + username + "'";
+         List<List<String>> result = esql.executeQueryAndReturnResult(checkQuery);
+         int privs = 1; 
+         if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
+            privs = 0; 
+         }
+   
+         System.out.println("Enter the ID of the order you'd like to view: "); 
+         Integer orderNum = Integer.parseInt(in.readLine());
+         
+         String query = "SELECT * FROM FoodOrder WHERE orderID = " + orderNum;//selecting
+         if (privs == 0){
+            query += " AND login = '" + username + "'"; //look up order for that specific user
+            result = esql.executeQueryAndReturnResult(query);
+            if (result.isEmpty()){
+               System.out.println("\nSorry, you are not authorized to view this order.\n");
+               return;
+            }
+         }
+         else {
+            result = esql.executeQueryAndReturnResult(query);
+         }
+         for (List<String> row : result) {
+            System.out.println("Order ID: " + row.get(0));
+            System.out.println("User: " + row.get(1));
+            System.out.println("Store ID: " + row.get(2));  
+            System.out.println("Total Price: $" + row.get(3));  
+            System.out.println("Order Date and Time: " + row.get(4));
+            System.out.println("Order Status: " + row.get(5));
+            System.out.println("--------------------------------------------------");
+        } 
+      } catch (Exception e) {
+         System.err.println("Error: " + e.getMessage());
+      }
+      
+   }//end viewOrderInfo
+
+   public static void updateOrderStatus(PizzaStore esql) {}
+
+   public static void viewStores(PizzaStore esql) {
+    try {
+        // Query to retrieve all store information
+        String query = "SELECT storeID, address, city, state, isOpen, reviewScore FROM Store";
+        List<List<String>> result = esql.executeQueryAndReturnResult(query);
+
+        if (result.isEmpty()) {
+            System.out.println("No stores available.");
+            return;
+        }
+
+        // Display store details
+        System.out.println("\nAvailable Stores:");
+        System.out.println("--------------------------------------------------");
+        for (List<String> row : result) {
+            System.out.println("Store ID: " + row.get(0));
+            System.out.println("Address: " + row.get(1) + ", " + row.get(2) + ", " + row.get(3));
+            System.out.println("Open Status: " + row.get(4));
+            System.out.println("Review Score: " + (row.get(5) != null ? row.get(5) : "No reviews yet"));
+            System.out.println("--------------------------------------------------");
+        }
+
+    } catch (Exception e) {
+        System.err.println("Error: " + e.getMessage());
     }
-
-   }
-
+   }//end viewStores
+   
    public static void updateMenu(PizzaStore esql, String username) {
 
       try {
@@ -867,105 +952,154 @@ public class PizzaStore {
             return;
          }
 
-         System.out.println ("Enter the item name to update: ");
+         System.out.println ("1. Insert new item");
+         System.out.println ("2. Update existing item");
 
-         String itemName = in.readLine();
+         int input = readChoice();
 
-         String itemInfo = "SELECT * FROM Items WHERE itemName = '" + itemName + "'";
+         switch(input) {
 
-         esql.executeQueryAndPrintResult(itemInfo);
+            case 1:
 
-         System.out.println ("Choose item information to update");
-         System.out.println ("1. Item Name");
-         System.out.println ("2. Ingredients");
-         System.out.println ("3. Item Type");
-         System.out.println ("4. Price");
-         System.out.println ("5. Description");
-         System.out.println ("6. Exit");
-         
-         int choice = readChoice();
+               System.out.println ("Enter item name: ");
+               String name = in.readLine();
 
-         switch(choice) {
+               System.out.println ("Enter item ingredients: ");
+               String ingredients = in.readLine();
 
-            case 1: 
+               System.out.println ("Enter item type: ");
+               String type = in.readLine();
 
-               System.out.println ("Enter new item name");
-               String newName = in.readLine();
-
-               String nameQuery = "Update Items SET itemName = '" + newName + "' WHERE itemName = '" + itemName + "'";
-               esql.executeUpdate(nameQuery);
-
-               System.out.println ("Item name successfully updated to '" + newName + "'");
-
-               break;
-
-            case 2: 
-
-               System.out.println ("Enter new ingredients");
-               String newIng = in.readLine();
-
-               String ingQuery = "Update Items SET ingredients = '" + newIng + "' WHERE itemName = '" + itemName + "'";
-               esql.executeUpdate(ingQuery);
-
-               
-
-               System.out.println ("Item ingredients successfully updated to '" + newIng + "'");
-
-               break;
-
-            case 3: 
-
-               System.out.println ("Enter new item type");
-               String newType = in.readLine();
-
-               String typeQuery = "Update Items SET typeOfItem = '" + newType + "' WHERE itemName = '" + itemName + "'";
-               esql.executeUpdate(typeQuery);
-
-               System.out.println ("Item type successfully updated to '" + newType + "'");
-
-               break;
-
-            case 4: 
-
-               System.out.println ("Enter new price");
+               System.out.println ("Enter item price: ");
                String price = in.readLine();
 
-               String priceQuery = "Update Items SET price = '" + price + "' WHERE itemName = '" + itemName + "'";
-               esql.executeUpdate(priceQuery);
+               System.out.println ("Enter item description: ");
+               String descr = in.readLine();
 
-               System.out.println ("Item price successfully updated to '" + price + "'");
-
-               break;
-
-            case 5: 
-
-               System.out.println ("Enter new description");
-               String description = in.readLine();
-
-               String descQuery = "Update Items SET price = '" + description + "' WHERE itemName = '" + itemName + "'";
-               esql.executeUpdate(descQuery);
-
-               System.out.println ("Item description successfully updated to '" + description + "'");
+               String query = "INSERT INTO Items(itemName, ingredients, typeOfItem, price, description) VALUES ('"
+                               + name + "', '" + ingredients + "', '" + type + "', '" + price + "', '" + descr + "')";
+               
+               esql.executeUpdate(query);
+               System.out.println("Item created successfully!");
 
                break;
 
-            case 6: 
+            case 2:
 
-               System.out.println ("Returning to main menu...");
+               System.out.println ("Enter the item name to update: ");
 
-               break;
+               String itemName = in.readLine();
 
-            case 7:
+               String itemInfo = "SELECT * FROM Items WHERE itemName = '" + itemName + "'";
 
-                System.out.println ("Invalid choice! Please choose agian");
+               esql.executeQueryAndPrintResult(itemInfo);
+
+               System.out.println ("Choose item information to update");
+               System.out.println ("1. Item Name");
+               System.out.println ("2. Ingredients");
+               System.out.println ("3. Item Type");
+               System.out.println ("4. Price");
+               System.out.println ("5. Description");
+               System.out.println ("6. Exit");
+         
+               int choice = readChoice();
+
+               switch(choice) {
+
+                  case 1: 
+
+                     System.out.println ("Enter new item name");
+                     String newName = in.readLine();
+
+                     String nameQuery = "Update Items SET itemName = '" + newName + "' WHERE itemName = '" + itemName + "'";
+                     esql.executeUpdate(nameQuery);
+
+                     System.out.println ("Item name successfully updated to '" + newName + "'");
+
+                     String newUpdate = "SELECT * FROM Items WHERE itemName = '" + itemName + "'";
+                     esql.executeQueryAndPrintResult(newUpdate);
+
+                     break;
+
+                  case 2: 
+
+                     System.out.println ("Enter new ingredients");
+                     String newIng = in.readLine();
+
+                     String ingQuery = "Update Items SET ingredients = '" + newIng + "' WHERE itemName = '" + itemName + "'";
+                     esql.executeUpdate(ingQuery);
+
+                     System.out.println ("Item ingredients successfully updated to '" + newIng + "'");
+
+                     String newUpdate1 = "SELECT * FROM Items WHERE itemName = '" + itemName + "'";
+                     esql.executeQueryAndPrintResult(newUpdate1);
+
+                     break;
+
+                  case 3: 
+
+                     System.out.println ("Enter new item type");
+                     String newType = in.readLine();
+
+                     String typeQuery = "Update Items SET typeOfItem = '" + newType + "' WHERE itemName = '" + itemName + "'";
+                     esql.executeUpdate(typeQuery);
+
+                     System.out.println ("Item type successfully updated to '" + newType + "'");
+
+                     String newUpdate2 = "SELECT * FROM Items WHERE itemName = '" + itemName + "'";
+                     esql.executeQueryAndPrintResult(newUpdate2);
+
+                     break;
+
+                  case 4: 
+
+                     System.out.println ("Enter new price");
+                     String newprice = in.readLine();
+
+                     String priceQuery = "Update Items SET price = '" + newprice + "' WHERE itemName = '" + itemName + "'";
+                     esql.executeUpdate(priceQuery);
+
+                     System.out.println ("Item price successfully updated to '" + newprice + "'");
+
+                     String newUpdate3= "SELECT * FROM Items WHERE itemName = '" + itemName + "'";
+                     esql.executeQueryAndPrintResult(newUpdate3);
+
+                     break;
+
+                  case 5: 
+
+                     System.out.println ("Enter new description");
+                     String description = in.readLine();
+
+                     String descQuery = "Update Items SET price = '" + description + "' WHERE itemName = '" + itemName + "'";
+                     esql.executeUpdate(descQuery);
+
+                     System.out.println ("Item description successfully updated to '" + description + "'");
+
+                     String newUpdate4 = "SELECT * FROM Items WHERE itemName = '" + itemName + "'";
+                     esql.executeQueryAndPrintResult(newUpdate4);
+
+                     break;
+
+                  case 6: 
+
+                     System.out.println ("Returning to main menu...");
+
+                     break;
+
+                  case 7:
+
+                     System.out.println ("Invalid choice! Please choose agian");
+                  }
+
+               }   
          }
-      }
 
       catch (Exception e) {
          
          System.err.println(e.getMessage());
       }
-   }
+   }//end updateMenu
 
 }
 
