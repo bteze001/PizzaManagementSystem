@@ -327,7 +327,7 @@ public class PizzaStore {
                 System.out.println("11. Update User");
 
                 System.out.println(".........................");
-                System.out.println("20. Log out");
+                System.out.println("0. Log out");
                 switch (readChoice()){
                    case 1: viewProfile(esql, authorisedUser); break;
                    case 2: updateProfile(esql, authorisedUser); break;
@@ -343,7 +343,7 @@ public class PizzaStore {
 
 
 
-                   case 20: usermenu = false; break;
+                   case 0: usermenu = false; break;
                    default : System.out.println("Unrecognized choice!"); break;
                 }
               }
@@ -555,7 +555,7 @@ public class PizzaStore {
 
          if (result.isEmpty() || !result.get(0).get(0).trim().equalsIgnoreCase("manager")) {
 
-            System.out.println("You are not authorized to update user login or role.");
+            System.out.println("\nSorry, you are not authorized to update user login or role.\n");
 
             return;
          }
@@ -731,7 +731,6 @@ public class PizzaStore {
          
          if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
            query += " f WHERE f.login = '" + username + "'";
-           System.out.println("user is NOT authorized");
          }
          result = esql.executeQueryAndReturnResult(query);
 
@@ -739,6 +738,7 @@ public class PizzaStore {
             System.out.println("You have no previous orders.");
         } else {
             System.out.println("Order History:");
+            System.out.println("--------------------------------------------------");
             for (List<String> row : result) {
                 System.out.println("Order ID: " + row.get(0));
                 System.out.println("User: " + row.get(1));
@@ -819,11 +819,9 @@ public class PizzaStore {
          String query = "SELECT * FROM FoodOrder";
          String checkQuery = "SELECT role FROM Users WHERE login = '" + username + "'";
          List<List<String>> result = esql.executeQueryAndReturnResult(checkQuery);
-         // System.out.println(result.get(0).get(0).trim());
          
          if (result.isEmpty() || (!result.get(0).get(0).trim().equalsIgnoreCase("manager") && !result.get(0).get(0).trim().equalsIgnoreCase("driver"))) {
            query += " f WHERE f.login = '" + username + "'";
-         //   System.out.println("user is NOT authorized");
          }
          query += " LIMIT 5;";
          result = esql.executeQueryAndReturnResult(query);
@@ -967,7 +965,7 @@ public class PizzaStore {
 
          if (result.isEmpty() || !result.get(0).get(0).trim().equalsIgnoreCase("manager")) {
 
-            System.out.println("You are not authorized to update user login or role.");
+            System.out.println("\nSorry, you are not authorized to update the menu.\n");
 
             return;
          }
