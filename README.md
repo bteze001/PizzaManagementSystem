@@ -2,32 +2,73 @@
 
 ## Overview
 
-A database-backed application written in JAVA (JDBC) with PostgreSQL that simulates a pizza store's operations. It supports customes, drivers and managers each with role-based functionality.
-
-This projects was built to demonstrate SQL query design, data modeing, database creation and transaction handling.
+A full-stack database application simulating pizza store operations with role-based access control. Built with Java JDBC and PostgreSQL to demonstrate enterprise database design and transaction management. 
 
 ## Features
 
-### User Features
+### Customer Features
 
-* Create account, login, and manage profile.
-* Browse and filter menu items by type or price
-* Place new orders and view order history
-* Check details for recent or specific orders
+* User authentication and profile management
+* Browse menu with filtering (by type, price)
+* Place orders with multiple items
+* View order history and order details
 
 ### Driver Features
 
-* Update delivery order status
-* Access customer order details
+* Update order delivery status
+* View customer order information
 
 ### Manager Features
 
-* Update meny items (add/remove/change)
-* Manage users and assign roles
-* View all orders and sales records
+* Full menu management (CRUD operations)
+* User role management
+* System-wide order visibility
 
-## Tech Stack 
+## Technical Architecture 
 
-* Java
-* PostgreSQL (Relational Database)
-* SQL
+**Backend:** Java with JDBC
+
+**Database:** PostgreSQL
+
+**Key Concepts:** SQL queries, transactions, prepared statements, role-based access control
+
+### Database Schema
+
+* Users (authentication, roles)
+* Items (menu inventory)
+* Store (location)
+* FoodOrder (order tracking)
+* ItemsInOrder (order line items)
+
+### Prerequisites
+
+* Java 17+
+* PostgreSQL 12+
+* PostgreSQL JDBC Driver (postgresql-42.7.1.jar)
+
+### Installation
+
+```
+
+bash
+# Clone repository
+git clone repo 
+
+# Set up database 
+psql -U postgres -p 5433
+CREATE DATABASE pizzamanagemnt
+\q 
+
+psql -h localhost -p 5433 -U postgres -d pizzamanagement -f PizzaManagementSys/sql/src/create_tables.sql 
+
+# Replace data path in the load_tables file
+psql -h localhost -p 5433 -U postgres -d pizzamanagement -f PizzaManagementSys/sql/src/load_tables.sql 
+
+psql -h localhost -p 5433 -U postgres -d pizzamanagement -f PizzaManagementSys/sql/src/create_indexes.sql
+
+# Compile and run 
+cd java/scripts
+chmod +x compile.sh
+./compile.sh 
+
+```

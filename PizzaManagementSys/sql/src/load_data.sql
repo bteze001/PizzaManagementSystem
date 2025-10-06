@@ -1,20 +1,10 @@
 /* Replace the location to where you saved the data files*/
-COPY Users
-FROM '/home/csmajs/bteze001/CS166_Project/cs166_project_phase_3/data/users.csv'
-WITH DELIMITER ',' CSV HEADER;
+\copy Users FROM '/PizzaManagementSystem/PizzaManagementSys/data/users.csv' WITH DELIMITER ',' CSV HEADER;
 
-COPY Items
-FROM '/home/csmajs/bteze001/CS166_Project/cs166_project_phase_3/data/items.csv'
-WITH DELIMITER ',' CSV HEADER;
+\copy Items FROM '/PizzaManagementSystem/PizzaManagementSys/data/items.csv' WITH DELIMITER ',' CSV HEADER;
 
-COPY Store
-FROM '/home/csmajs/bteze001/CS166_Project/cs166_project_phase_3/data/store.csv'
-WITH DELIMITER ',' CSV HEADER;
+\copy Store FROM '/PizzaManagementSystem/PizzaManagementSys/data/store.csv' WITH DELIMITER ',' CSV HEADER;
 
-COPY FoodOrder
-FROM '/home/csmajs/bteze001/CS166_Project/cs166_project_phase_3/data/foodorder.csv'
-WITH DELIMITER ',' CSV HEADER;
+\copy FoodOrder FROM '/PizzaManagementSystem/PizzaManagementSys/data/foodorder.csv' WITH DELIMITER ',' CSV HEADER;
 
-COPY ItemsInOrder
-FROM '/home/csmajs/bteze001/CS166_Project/cs166_project_phase_3/data/itemsinorder.csv'
-WITH DELIMITER ',' CSV HEADER;
+\copy ItemsInOrder FROM '/PizzaManagementSystem/PizzaManagementSys/data/itemsinorder.csv' WITH DELIMITER ',' CSV HEADER;

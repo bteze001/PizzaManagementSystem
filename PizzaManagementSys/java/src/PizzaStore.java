@@ -1,16 +1,3 @@
-/*
- * Template JAVA User Interface
- * =============================
- *
- * Database Management Systems
- * Department of Computer Science &amp; Engineering
- * University of California - Riverside
- *
- * Target DBMS: 'Postgres'
- *
- */
-
-
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -300,7 +287,11 @@ public class PizzaStore {
          String dbname = args[0];
          String dbport = args[1];
          String user = args[2];
-         esql = new PizzaStore (dbname, dbport, user, "");
+
+         System.out.print("Enter password: ");
+         String password = in.readLine();
+
+         esql = new PizzaStore (dbname, dbport, user, password);
 
          boolean keepon = true;
          while(keepon) {
@@ -363,6 +354,7 @@ public class PizzaStore {
          }//end while
       }catch(Exception e) {
          System.err.println (e.getMessage ());
+         e.printStackTrace();
       }finally{
          // make sure to cleanup the created table and close the connection.
          try{
